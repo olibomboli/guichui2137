@@ -1,9 +1,14 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameState {
     private BoardMap boardMap;
     private Player player;
     private int score;
+    private final List<Ghost> ghosts = new ArrayList<>();
+    private boolean gameOver = false;
 
     public GameState(BoardMap boardMap) {
         this.boardMap = boardMap;
@@ -29,9 +34,46 @@ public class GameState {
         return boardMap;
     }
 
+    public List<Ghost> getGhosts() {
+        return ghosts;
+    }
+
+    public void addGhost(Ghost ghost) {
+        ghosts.add(ghost);
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    private void checkCollisions() {
+        if (player == null) return;
+        for (Ghost ghost : ghosts) {
+            if (ghost.getPosition().getRow() == player.getPosition().getRow() &&
+                    ghost.getPosition().getCol() == player.getPosition().getCol()) {
+                if (!player.isInvincible()) {
+                    player.loseHeart();
+                    player.makeInvincible(2000);
+                    if (player.getHearts() <= 0) {
+                        gameOver = true;
+                    }
+                }
+            }
+        }
+    }
+
+    public void moveGhosts() {
+        for (Ghost ghost : ghosts) {
+            ghost.move(ghost.getRandomDirection(), boardMap);
+        }
+        checkCollisions();
+    }
+
     public boolean movePlayer(Direction direction) {
         if (player != null) {
-            Position prevPos = player.getPosition();
+            if (!player.canMove()) {
+                return false;
+            }
             boolean moved = player.move(direction, boardMap);
             if (moved) {
                 Position newPos = player.getPosition();
@@ -41,6 +83,7 @@ public class GameState {
                     score += 10;
                 }
             }
+            checkCollisions();
             return moved;
         }
         return false;

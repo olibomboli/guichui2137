@@ -1,15 +1,19 @@
 package controller;
 
 import model.*;
+import view.EndGameWindow;
 import view.GameWindow;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.SwingUtilities;
 
 public class GameController {
     private GameBoardModel model;
     private GameState gameState;
     private GameWindow view;
+    private Thread ghostThread;
+    private volatile boolean running;
 
     public GameController(GameBoardModel model, GameWindow view, GameState gameState) {
         this.model = model;
@@ -18,7 +22,11 @@ public class GameController {
 
         Player player = new Player(new Position(23, 13), 3);
         gameState.setPlayer(player);
+        view.updateScore(gameState.getScore());
+        view.updateHearts(player.getHearts());
 
+        createGhosts();
+        startGhostThread();
         keyListener();
     }
 
@@ -42,6 +50,44 @@ public class GameController {
                     view.updateScore(gameState.getScore());
                 }
             }
+        });
+    }
+
+    private void createGhosts() {
+        gameState.addGhost(new Ghost(new Position(14, 13)));
+        gameState.addGhost(new Ghost(new Position(14, 14)));
+    }
+
+    private void startGhostThread() {
+        running = true;
+        ghostThread = new Thread(() -> {
+            while (running) {
+                gameState.moveGhosts();
+                model.refresh();
+                view.updateScore(gameState.getScore());
+                view.updateHearts(gameState.getPlayer().getHearts());
+
+                if (gameState.isGameOver()) {
+                    running = false;
+                    SwingUtilities.invokeLater(this::endGame);
+                    break;
+                }
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+        ghostThread.start();
+    }
+
+    private void endGame() {
+        view.setVisible(false);
+        new EndGameWindow(gameState.getScore(), () -> {
+            view.dispose();
         });
     }
 }

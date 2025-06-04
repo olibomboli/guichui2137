@@ -11,6 +11,8 @@ public class Player extends Entity {
     private int hearts;
     private Direction direction;
     private Map<Direction, BufferedImage>sprites;
+    private long invincibleUntil;
+    private long frozenUntil;
 
     public Player(Position position, int hearts) {
         super(position);
@@ -58,5 +60,19 @@ public class Player extends Entity {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public boolean isInvincible() {
+        return System.currentTimeMillis() < invincibleUntil;
+    }
+
+    public boolean canMove() {
+        return System.currentTimeMillis() >= frozenUntil;
+    }
+
+    public void makeInvincible(long millis) {
+        long now = System.currentTimeMillis();
+        this.invincibleUntil = now + millis;
+        this.frozenUntil = now + millis;
     }
 }

@@ -25,6 +25,12 @@ public class GameBoardModel extends AbstractTableModel {
     // tutaj jeśli jest w komórce pac - daje sprite, jeśli nie - daje tiletype
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        for (Ghost ghost : gameState.getGhosts()) {
+            Position gPos = ghost.getPosition();
+            if (gPos.getRow() == rowIndex && gPos.getCol() == columnIndex) {
+                return ghost.getSprite();
+            }
+        }
         Player player = gameState.getPlayer();
         if (player != null)  {
             Position position = player.getPosition();

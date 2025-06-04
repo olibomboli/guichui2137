@@ -59,7 +59,6 @@ public class GameWindow extends JFrame {
 
         heartsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         heartsPanel.setBackground(backgroundColor);
-        //TODO: pętla for z serduszkami
         add(heartsPanel, BorderLayout.SOUTH);
     }
 
@@ -135,5 +134,17 @@ public class GameWindow extends JFrame {
 
     public void updateScore(int score) {
         scoreLabel.setText("Score: " + score);
+    }
+
+    public void updateHearts(int hearts) {
+        heartsPanel.removeAll();
+        for (int i = 0; i < hearts; i++) {
+            JLabel heart = new JLabel("\u2764");
+            heart.setFont(new Font("SansSerif", Font.BOLD, 24));
+            heart.setForeground(Color.RED);
+            heartsPanel.add(heart);
+        }
+        heartsPanel.revalidate();
+        heartsPanel.repaint();
     }
 }

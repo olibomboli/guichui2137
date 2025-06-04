@@ -1,40 +1,28 @@
 package model;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Map;
 import java.util.Random;
 
 public class Ghost extends Entity {
-    private Direction direction;
-    private Map<Direction, BufferedImage> sprites;
-    private Random random;
+    private final BufferedImage sprite;
+    private final Random random = new Random();
 
-    public Ghost(Position position, Map<Direction, BufferedImage> sprites) {
-        super(position);
-        this.sprites = sprites;
-        this.direction = Direction.UP;
-        this.random = new Random();
-    }
-
-    public BufferedImage getSprite() {
-        return sprites.get(direction);
-    }
-
-    @Override
-    public boolean move(Direction dir, BoardMap map) {
-        this.direction = dir;
-        Position nextP = position.nextInDirection(dir);
-        TileType nextTile = map.getTileAt(nextP.getRow(), nextP.getCol());
-
-        if (nextTile != TileType.WALL) {
-            position = nextP;
-            return true;
+    public Ghost(Position position) {
+            super(position);
+            sprite = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = sprite.createGraphics();
+            g2.setColor(Color.BLUE);
+            g2.fillOval(0, 0, 30, 30);
+            g2.dispose();
         }
-        return false;
-    }
 
-    public Direction getRandomDirection() {
-        Direction[] directions = Direction.values();
-        return directions[random.nextInt(directions.length)];
+        public BufferedImage getSprite() {
+            return sprite;
+        }
+
+        public Direction getRandomDirection() {
+            Direction[] directions = Direction.values();
+            return directions[random.nextInt(directions.length)];
+        }
     }
-}
