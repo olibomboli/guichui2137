@@ -59,5 +59,4 @@ public class Player extends Entity {
     public Direction getDirection() {
         return direction;
     }
-
 }
