@@ -7,12 +7,18 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 
+// Added for custom movement handling
+import model.BoardMap;
+
 public class Player extends Entity {
     private int hearts;
     private Direction direction;
     private Map<Direction, BufferedImage>sprites;
     private long invincibleUntil;
     private long frozenUntil;
+    private long moveDelay = 150;
+    private long moveDelayResetTime = 0;
+    private long nextAllowedMove = 0;
 
     public Player(Position position, int hearts) {
         super(position);
@@ -67,12 +73,35 @@ public class Player extends Entity {
     }
 
     public boolean canMove() {
-        return System.currentTimeMillis() >= frozenUntil;
+        long now = System.currentTimeMillis();
+        if (moveDelayResetTime > 0 && now >= moveDelayResetTime) {
+            moveDelay = 150;
+            moveDelayResetTime = 0;
+        }
+        return now >= frozenUntil && now >= nextAllowedMove;
     }
 
     public void makeInvincible(long millis) {
         long now = System.currentTimeMillis();
         this.invincibleUntil = now + millis;
         this.frozenUntil = now + millis;
+    }
+
+    public void grantTemporaryInvincibility(long millis) {
+        this.invincibleUntil = System.currentTimeMillis() + millis;
+    }
+
+    public void speedUp(long newDelay, long duration) {
+        moveDelay = newDelay;
+        moveDelayResetTime = System.currentTimeMillis() + duration;
+    }
+
+    @Override
+    public boolean move(Direction dir, BoardMap map) {
+        boolean moved = super.move(dir, map);
+        if (moved) {
+            nextAllowedMove = System.currentTimeMillis() + moveDelay;
+        }
+        return moved;
     }
 }

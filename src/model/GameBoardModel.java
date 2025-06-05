@@ -31,6 +31,12 @@ public class GameBoardModel extends AbstractTableModel {
                 return ghost.getSprite();
             }
         }
+        for (PowerUp p : gameState.getPowerUps()) {
+            Position pos = p.getPosition();
+            if (pos.getRow() == rowIndex && pos.getCol() == columnIndex) {
+                return p.getSprite();
+            }
+        }
         Player player = gameState.getPlayer();
         if (player != null)  {
             Position position = player.getPosition();

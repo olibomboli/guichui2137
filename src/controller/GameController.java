@@ -4,6 +4,7 @@ import model.*;
 import view.GameWindow;
 import view.HighScoresWindow;
 import view.EndGameWindow;
+import java.util.Random;
 import java.util.function.Consumer;
 
 import javax.swing.*;
@@ -17,6 +18,8 @@ public class GameController {
     private Thread ghostThread;
     private volatile boolean running;
     private long startTime;
+    private final Random random = new Random();
+    private long lastDropTime = 0L;
 
     public GameController(GameBoardModel model, GameWindow view, GameState gameState) {
         this.model = model;
@@ -78,6 +81,7 @@ public class GameController {
         ghostThread = new Thread(() -> {
             while (running) {
                 gameState.moveGhosts();
+                maybeSpawnPowerUp();
                 model.refresh();
                 view.updateScore(gameState.getScore());
                 view.updateHearts(gameState.getPlayer().getHearts());
@@ -92,7 +96,7 @@ public class GameController {
                 }
 
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(gameState.getGhostMoveDelay());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -102,26 +106,46 @@ public class GameController {
         ghostThread.start();
     }
 
+    private void maybeSpawnPowerUp() {
+        long now = System.currentTimeMillis();
+        if (now - lastDropTime >= 5000) {
+            lastDropTime = now;
+            if (random.nextInt(100) < 25) {
+                var ghosts = gameState.getGhosts();
+                if (!ghosts.isEmpty()) {
+                    Ghost g = ghosts.get(random.nextInt(ghosts.size()));
+                    Position pos = new Position(g.getPosition().getRow(), g.getPosition().getCol());
+                    PowerUpType[] types = PowerUpType.values();
+                    PowerUpType type = types[random.nextInt(types.length)];
+                    gameState.addPowerUp(new PowerUp(pos, type));
+                }
+            }
+        }
+    }
+
     private void endGame() {
         // Freeze the game view for a short moment so the prompt does not
         // immediately pop up in the player's face.
-        javax.swing.Timer timer = new javax.swing.Timer(2000, e -> {
-            view.setVisible(false);
+        Thread delayThread = new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ignored) {
+            }
+            SwingUtilities.invokeLater(() -> {
+                view.setVisible(false);
 
-            Consumer<String> submit = playerName -> {
-                String name = (playerName == null || playerName.isBlank()) ? "Player" : playerName;
-                HighScoresManager manager = new HighScoresManager();
-                manager.addScore(new ScoreEntry(name, gameState.getScore()));
+                Consumer<String> submit = playerName -> {
+                    String name = (playerName == null || playerName.isBlank()) ? "Player" : playerName;
+                    HighScoresManager manager = new HighScoresManager();
+                    manager.addScore(new ScoreEntry(name, gameState.getScore()));
 
-                // disposing the game window will cause the main menu window
-                // to be shown (handled in MainMenuController)
-                view.dispose();
-            };
+                    view.dispose();
+                };
 
-            EndGameWindow window = new EndGameWindow(gameState.getScore(), submit);
-            window.setVisible(true);
+                EndGameWindow window = new EndGameWindow(gameState.getScore(), submit);
+                window.setVisible(true);
+            });
         });
-        timer.setRepeats(false);
-        timer.start();
+        delayThread.start();
     }
 }

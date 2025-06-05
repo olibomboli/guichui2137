@@ -161,7 +161,7 @@ public class GameWindow extends JFrame {
             } else {
                 JLabel heart = new JLabel("\u2764");
                 heart.setFont(new Font("SansSerif", Font.BOLD, 24));
-                heart.setForeground(Color.RED);
+                heart.setForeground(Color.PINK);
                 heartsPanel.add(heart);
             }
         }
