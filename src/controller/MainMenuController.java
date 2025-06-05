@@ -6,6 +6,7 @@ import model.GameState;
 import view.MainMenuWindow;
 import view.GameWindow;
 import view.HighScoresWindow;
+import model.HighScoresManager;
 
 public class MainMenuController {
     private MainMenuWindow window;
@@ -39,7 +40,8 @@ public class MainMenuController {
     private void showHighScores() {
         window.setVisible(false);
 
-        HighScoresWindow scoresWindow = new HighScoresWindow();
+        HighScoresManager manager = new HighScoresManager();
+        HighScoresWindow scoresWindow = new HighScoresWindow(manager.loadScores());
         scoresWindow.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {

@@ -1,11 +1,14 @@
 package view;
 
+import model.ScoreEntry;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class HighScoresWindow extends JFrame {
 
-    public HighScoresWindow() {
+    public HighScoresWindow(List<ScoreEntry> scores) {
         setTitle("High Scores: Pac-Man");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // CHECK
         setSize(800, 600);
@@ -33,13 +36,22 @@ public class HighScoresWindow extends JFrame {
 
         mainPanel.add(titlePanel, BorderLayout.NORTH);
 
-        JPanel scoresPanel = new JPanel();
-        JLabel placeholder = new JLabel("Tu będą wyniki");
-        scoresPanel.setBackground(backgroundColor);
-        scoresPanel.add(placeholder);
-        add(scoresPanel, BorderLayout.CENTER);
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        int rank = 1;
+        for (ScoreEntry entry : scores) {
+            listModel.addElement(rank++ + ". " + entry.getName() + " - " + entry.getScore());
+        }
 
-        mainPanel.add(scoresPanel, BorderLayout.CENTER);
+        JList<String> list = new JList<>(listModel);
+        list.setBackground(backgroundColor);
+        list.setForeground(new Color(0xF08080));
+        list.setFont(new Font("Monospaced", Font.BOLD, 20));
+
+        JScrollPane scroll = new JScrollPane(list);
+        scroll.getViewport().setBackground(backgroundColor);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+
+        mainPanel.add(scroll, BorderLayout.CENTER);
 
         add(mainPanel);
         setVisible(true);

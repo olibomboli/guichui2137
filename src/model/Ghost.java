@@ -53,7 +53,7 @@ public class Ghost extends Entity {
         return directions[random.nextInt(directions.length)];
     }
 
-    public Direction nextDirection(Position exit) {
+    public Direction nextDirection(Position exit, BoardMap map) {
         if (leavingHouse) {
             if (position.getRow() > exit.getRow()) return Direction.UP;
             if (position.getRow() < exit.getRow()) return Direction.DOWN;
@@ -61,6 +61,16 @@ public class Ghost extends Entity {
             if (position.getCol() < exit.getCol()) return Direction.RIGHT;
             return Direction.UP; // default, shouldn't happen
         }
-        return getRandomDirection();
+
+        // choose a random valid direction so ghosts keep moving
+        for (int i = 0; i < 10; i++) {
+            Direction dir = getRandomDirection();
+            Position next = position.nextInDirection(dir);
+            if (map.getTileAt(next.getRow(), next.getCol()) != TileType.WALL) {
+                return dir;
+            }
+        }
+        // fallback if somehow surrounded by walls
+        return Direction.UP;
     }
 }

@@ -1,12 +1,12 @@
 package controller;
 
 import model.*;
-import view.EndGameWindow;
 import view.GameWindow;
+import view.HighScoresWindow;
 
+import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.SwingUtilities;
 
 public class GameController {
     private GameBoardModel model;
@@ -102,8 +102,21 @@ public class GameController {
 
     private void endGame() {
         view.setVisible(false);
-        new EndGameWindow(gameState.getScore(), () -> {
+
+        String name = JOptionPane.showInputDialog(view, "Enter your name:");
+        if (name == null || name.isBlank()) {
+            name = "Player";
+        }
+
+        HighScoresManager manager = new HighScoresManager();
+        manager.addScore(new ScoreEntry(name, gameState.getScore()));
+
+        Timer timer = new Timer(2000, e -> {
+            HighScoresWindow window = new HighScoresWindow(manager.loadScores());
+            window.setVisible(true);
             view.dispose();
         });
+        timer.setRepeats(false);
+        timer.start();
     }
 }

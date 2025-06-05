@@ -70,7 +70,7 @@ public class GameState {
                 continue;
             }
 
-            ghost.move(ghost.nextDirection(exitPosition), boardMap);
+            ghost.move(ghost.nextDirection(exitPosition, boardMap), boardMap);
 
             if (ghost.isLeavingHouse() &&
                     ghost.getPosition().getRow() == exitPosition.getRow() &&
