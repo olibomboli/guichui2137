@@ -82,12 +82,14 @@ public class GameController {
             while (running) {
                 gameState.moveGhosts();
                 maybeSpawnPowerUp();
-                model.refresh();
-                view.updateScore(gameState.getScore());
-                view.updateHearts(gameState.getPlayer().getHearts());
-                if (startTime != 0L) {
-                    view.updateTime(System.currentTimeMillis() - startTime);
-                }
+                SwingUtilities.invokeLater(() -> {
+                    model.refresh();
+                    view.updateScore(gameState.getScore());
+                    view.updateHearts(gameState.getPlayer().getHearts());
+                    if (startTime != 0L) {
+                        view.updateTime(System.currentTimeMillis() - startTime);
+                    }
+                });
 
                 if (gameState.isGameOver()) {
                     running = false;

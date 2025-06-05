@@ -64,10 +64,6 @@ public class Player extends Entity {
         hearts--;
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
     public boolean isInvincible() {
         return System.currentTimeMillis() < invincibleUntil;
     }
