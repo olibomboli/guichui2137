@@ -103,19 +103,25 @@ public class GameController {
     }
 
     private void endGame() {
-        view.setVisible(false);
+        // Freeze the game view for a short moment so the prompt does not
+        // immediately pop up in the player's face.
+        javax.swing.Timer timer = new javax.swing.Timer(2000, e -> {
+            view.setVisible(false);
 
-        Consumer<String> submit = playerName -> {
-            String name = (playerName == null || playerName.isBlank()) ? "Player" : playerName;
-            HighScoresManager manager = new HighScoresManager();
-            manager.addScore(new ScoreEntry(name, gameState.getScore()));
+            Consumer<String> submit = playerName -> {
+                String name = (playerName == null || playerName.isBlank()) ? "Player" : playerName;
+                HighScoresManager manager = new HighScoresManager();
+                manager.addScore(new ScoreEntry(name, gameState.getScore()));
 
-            HighScoresWindow window = new HighScoresWindow(manager.loadScores());
+                // disposing the game window will cause the main menu window
+                // to be shown (handled in MainMenuController)
+                view.dispose();
+            };
+
+            EndGameWindow window = new EndGameWindow(gameState.getScore(), submit);
             window.setVisible(true);
-            view.dispose();
-        };
-
-        EndGameWindow window = new EndGameWindow(gameState.getScore(), submit);
-        window.setVisible(true);
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 }

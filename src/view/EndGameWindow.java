@@ -13,6 +13,9 @@ public class EndGameWindow extends JFrame {
             setLocationRelativeTo(null);
             setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+            ImageIcon iconPac = new ImageIcon(getClass().getResource("/iconPac.png"));
+            setIconImage(iconPac.getImage());
+
             Color backgroundColor = new Color(0xFFF9E6);
             getContentPane().setBackground(backgroundColor);
 
@@ -39,6 +42,11 @@ public class EndGameWindow extends JFrame {
 
             JButton submit = new JButton("Submit");
             submit.setAlignmentX(Component.CENTER_ALIGNMENT);
+            submit.setBackground(new Color(0xF08080));
+            submit.setForeground(Color.WHITE);
+            submit.setFocusPainted(false);
+            submit.setFont(new Font("Monospaced", Font.BOLD, 16));
+            submit.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
             submit.addActionListener(e -> {
                 if (onSubmit != null) {
                     onSubmit.accept(nameField.getText());
