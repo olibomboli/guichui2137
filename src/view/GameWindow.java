@@ -1,9 +1,11 @@
 package view;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import model.GameBoardModel;
 import model.GameState;
@@ -14,7 +16,9 @@ public class GameWindow extends JFrame {
     private GameState gameState;
     private JTable gameTable;
     private JLabel scoreLabel;
+    private JLabel timeLabel;
     private JPanel heartsPanel;
+    private ImageIcon heartIcon;
 
     public GameWindow(GameBoardModel boardModel, GameState gameState) {
         this.boardModel = boardModel;
@@ -28,7 +32,7 @@ public class GameWindow extends JFrame {
     private void init() {
         setTitle("Play: Pac-Man");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(900, 1000);
+        setSize(900, 1100);
         setLocationRelativeTo(null);
         // setResizable(true);
 
@@ -39,13 +43,18 @@ public class GameWindow extends JFrame {
         getContentPane().setBackground(backgroundColor);
         setLayout(new BorderLayout());
 
-        //TODO: TIMER NA TOP PANELU
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBackground(backgroundColor);
-        scoreLabel = new JLabel(); // ??????????
+        scoreLabel = new JLabel();
         scoreLabel.setFont(new Font("Monospaced", Font.BOLD, 20));
         scoreLabel.setForeground(new Color(0xF08080));
         topPanel.add(scoreLabel);
+
+        timeLabel = new JLabel();
+        timeLabel.setFont(new Font("Monospaced", Font.BOLD, 20));
+        timeLabel.setForeground(new Color(0xF08080));
+        topPanel.add(Box.createHorizontalStrut(20));
+        topPanel.add(timeLabel);
         add(topPanel, BorderLayout.NORTH);
 
         gameTable = new JTable(boardModel);
@@ -57,6 +66,7 @@ public class GameWindow extends JFrame {
         gamePanel.add(gameTable, BorderLayout.CENTER);
         add(gamePanel, BorderLayout.CENTER);
 
+        loadHeartIcon();
         heartsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         heartsPanel.setBackground(backgroundColor);
         add(heartsPanel, BorderLayout.SOUTH);
@@ -136,15 +146,35 @@ public class GameWindow extends JFrame {
         scoreLabel.setText("Score: " + score);
     }
 
+    public void updateTime(long millis) {
+        long seconds = millis / 1000;
+        long minutes = seconds / 60;
+        long sec = seconds % 60;
+        timeLabel.setText(String.format("Time: %02d:%02d", minutes, sec));
+    }
+
     public void updateHearts(int hearts) {
         heartsPanel.removeAll();
         for (int i = 0; i < hearts; i++) {
-            JLabel heart = new JLabel("\u2764");
-            heart.setFont(new Font("SansSerif", Font.BOLD, 24));
-            heart.setForeground(Color.RED);
-            heartsPanel.add(heart);
+            if (heartIcon != null) {
+                heartsPanel.add(new JLabel(heartIcon));
+            } else {
+                JLabel heart = new JLabel("\u2764");
+                heart.setFont(new Font("SansSerif", Font.BOLD, 24));
+                heart.setForeground(Color.RED);
+                heartsPanel.add(heart);
+            }
         }
         heartsPanel.revalidate();
         heartsPanel.repaint();
+    }
+
+    private void loadHeartIcon() {
+        try {
+            Image img = ImageIO.read(getClass().getResource("/lifeHeart.png"));
+            heartIcon = new ImageIcon(img.getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+        } catch (IOException | IllegalArgumentException e) {
+            heartIcon = null;
+        }
     }
 }

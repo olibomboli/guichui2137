@@ -9,7 +9,7 @@ public class GameState {
     private int score;
     private final List<Ghost> ghosts = new ArrayList<>();
     private boolean gameOver = false;
-    private final Position exitPosition = new Position(11, 11);
+    private final Position exitPosition = new Position(11, 13);
     private int nextToRelease = 0;
 
     public GameState(BoardMap boardMap) {
@@ -78,7 +78,7 @@ public class GameState {
                 ghost.setLeavingHouse(false);
                 nextToRelease++;
                 if (nextToRelease == ghosts.size()) {
-                    boardMap.setTileAt(12, 11, TileType.WALL);
+                    boardMap.setTileAt(12, 13, TileType.WALL);
                 }
             }
         }

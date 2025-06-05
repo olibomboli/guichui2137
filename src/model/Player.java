@@ -25,8 +25,8 @@ public class Player extends Entity {
     private void loadSprites() {
         try {
             sprites.put(Direction.UP, ImageIO.read(getClass().getResource("/pacBack.png")));
-            sprites.put(Direction.LEFT, ImageIO.read(getClass().getResource("/pacRight.png")));
-            sprites.put(Direction.RIGHT, ImageIO.read(getClass().getResource("/pacLeft.png")));
+            sprites.put(Direction.LEFT, ImageIO.read(getClass().getResource("/pacLeft.png")));
+            sprites.put(Direction.RIGHT, ImageIO.read(getClass().getResource("/pacRight.png")));
             sprites.put(Direction.DOWN, ImageIO.read(getClass().getResource("/pacFront.png")));
         } catch (IOException e) {
             e.printStackTrace();

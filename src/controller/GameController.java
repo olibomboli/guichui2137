@@ -14,16 +14,19 @@ public class GameController {
     private GameWindow view;
     private Thread ghostThread;
     private volatile boolean running;
+    private long startTime;
 
     public GameController(GameBoardModel model, GameWindow view, GameState gameState) {
         this.model = model;
         this.view = view;
         this.gameState = gameState;
+        this.startTime = 0L;
 
         Player player = new Player(new Position(23, 13), 3);
         gameState.setPlayer(player);
         view.updateScore(gameState.getScore());
         view.updateHearts(player.getHearts());
+        view.updateTime(0);
 
         createGhosts();
         startGhostThread();
@@ -44,6 +47,9 @@ public class GameController {
                 };
 
                 if (dir != null) {
+                    if (startTime == 0L) {
+                        startTime = System.currentTimeMillis();
+                    }
                     gameState.getPlayer().setDirection(dir);
                     gameState.movePlayer(dir);
                     model.refresh();
@@ -73,6 +79,9 @@ public class GameController {
                 model.refresh();
                 view.updateScore(gameState.getScore());
                 view.updateHearts(gameState.getPlayer().getHearts());
+                if (startTime != 0L) {
+                    view.updateTime(System.currentTimeMillis() - startTime);
+                }
 
                 if (gameState.isGameOver()) {
                     running = false;
