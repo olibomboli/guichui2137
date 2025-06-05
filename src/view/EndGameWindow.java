@@ -2,44 +2,52 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.util.function.Consumer;
 
 public class EndGameWindow extends JFrame {
-    public EndGameWindow(int score, Runnable onSubmit) {
-        setTitle("Game Over");
-        setSize(400, 200);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        private final JTextField nameField = new JTextField();
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    public EndGameWindow(int score, Consumer<String> onSubmit) {
+            setTitle("Game Over");
+            setSize(400, 250);
+            setLocationRelativeTo(null);
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        JLabel overLabel = new JLabel("Game Over! Score: " + score);
-        overLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(overLabel);
+            Color backgroundColor = new Color(0xFFF9E6);
+            getContentPane().setBackground(backgroundColor);
 
-        panel.add(Box.createVerticalStrut(10));
+            JPanel panel = new JPanel();
+            panel.setBackground(backgroundColor);
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JLabel prompt = new JLabel("Enter your name:");
-        prompt.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(prompt);
+            JLabel overLabel = new JLabel("Game Over! Score: " + score);
+            overLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            overLabel.setFont(new Font("Monospaced", Font.BOLD, 20));
+            overLabel.setForeground(new Color(0xF08080));
+            panel.add(overLabel);
 
-        JTextField nameField = new JTextField();
-        nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        panel.add(nameField);
+            panel.add(Box.createVerticalStrut(10));
 
-        JButton submit = new JButton("Submit");
-        submit.setAlignmentX(Component.CENTER_ALIGNMENT);
-        submit.addActionListener(e -> {
-            if (onSubmit != null) {
-                onSubmit.run();
-            }
-            dispose();
-        });
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(submit);
+            JLabel prompt = new JLabel("Enter your name:");
+            prompt.setAlignmentX(Component.CENTER_ALIGNMENT);
+            prompt.setFont(new Font("Monospaced", Font.BOLD, 18));
+            prompt.setForeground(new Color(0xF08080));
+            panel.add(prompt);
 
-        add(panel);
-        setVisible(true);
+            nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+            panel.add(nameField);
+
+            JButton submit = new JButton("Submit");
+            submit.setAlignmentX(Component.CENTER_ALIGNMENT);
+            submit.addActionListener(e -> {
+                if (onSubmit != null) {
+                    onSubmit.accept(nameField.getText());
+                }
+                dispose();
+            });
+            panel.add(Box.createVerticalStrut(10));
+            panel.add(submit);
+
+            add(panel);
+        }
     }
-}

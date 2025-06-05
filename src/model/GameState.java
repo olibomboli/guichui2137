@@ -9,8 +9,6 @@ public class GameState {
     private int score;
     private final List<Ghost> ghosts = new ArrayList<>();
     private boolean gameOver = false;
-    private final Position exitPosition = new Position(11, 13);
-    private int nextToRelease = 0;
 
     public GameState(BoardMap boardMap) {
         this.boardMap = boardMap;
@@ -66,21 +64,7 @@ public class GameState {
 
     public void moveGhosts() {
         for (Ghost ghost : ghosts) {
-            if (ghost.getOrder() > nextToRelease) {
-                continue;
-            }
-
-            ghost.move(ghost.nextDirection(exitPosition, boardMap), boardMap);
-
-            if (ghost.isLeavingHouse() &&
-                    ghost.getPosition().getRow() == exitPosition.getRow() &&
-                    ghost.getPosition().getCol() == exitPosition.getCol()) {
-                ghost.setLeavingHouse(false);
-                nextToRelease++;
-                if (nextToRelease == ghosts.size()) {
-                    boardMap.setTileAt(12, 13, TileType.WALL);
-                }
-            }
+            ghost.move(ghost.nextDirection(boardMap), boardMap);
         }
         checkCollisions();
     }
@@ -97,6 +81,9 @@ public class GameState {
                 if (tile == TileType.DOT) {
                     boardMap.setTileAt(newPos.getRow(), newPos.getCol(), TileType.EMPTY);
                     score += 10;
+                    if (!boardMap.hasDotsRemaining()) {
+                        gameOver = true;
+                    }
                 }
             }
             checkCollisions();

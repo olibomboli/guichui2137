@@ -40,28 +40,12 @@ public class Ghost extends Entity {
         return order;
     }
 
-    public boolean isLeavingHouse() {
-        return leavingHouse;
-    }
-
-    public void setLeavingHouse(boolean leavingHouse) {
-        this.leavingHouse = leavingHouse;
-    }
-
     private Direction getRandomDirection() {
         Direction[] directions = Direction.values();
         return directions[random.nextInt(directions.length)];
     }
 
-    public Direction nextDirection(Position exit, BoardMap map) {
-        if (leavingHouse) {
-            if (position.getRow() > exit.getRow()) return Direction.UP;
-            if (position.getRow() < exit.getRow()) return Direction.DOWN;
-            if (position.getCol() > exit.getCol()) return Direction.LEFT;
-            if (position.getCol() < exit.getCol()) return Direction.RIGHT;
-            return Direction.UP; // default, shouldn't happen
-        }
-
+    public Direction nextDirection(BoardMap map) {
         // choose a random valid direction so ghosts keep moving
         for (int i = 0; i < 10; i++) {
             Direction dir = getRandomDirection();

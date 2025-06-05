@@ -3,6 +3,8 @@ package controller;
 import model.*;
 import view.GameWindow;
 import view.HighScoresWindow;
+import view.EndGameWindow;
+import java.util.function.Consumer;
 
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
@@ -90,7 +92,7 @@ public class GameController {
                 }
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -103,20 +105,17 @@ public class GameController {
     private void endGame() {
         view.setVisible(false);
 
-        String name = JOptionPane.showInputDialog(view, "Enter your name:");
-        if (name == null || name.isBlank()) {
-            name = "Player";
-        }
+        Consumer<String> submit = playerName -> {
+            String name = (playerName == null || playerName.isBlank()) ? "Player" : playerName;
+            HighScoresManager manager = new HighScoresManager();
+            manager.addScore(new ScoreEntry(name, gameState.getScore()));
 
-        HighScoresManager manager = new HighScoresManager();
-        manager.addScore(new ScoreEntry(name, gameState.getScore()));
-
-        Timer timer = new Timer(2000, e -> {
             HighScoresWindow window = new HighScoresWindow(manager.loadScores());
             window.setVisible(true);
             view.dispose();
-        });
-        timer.setRepeats(false);
-        timer.start();
+        };
+
+        EndGameWindow window = new EndGameWindow(gameState.getScore(), submit);
+        window.setVisible(true);
     }
 }

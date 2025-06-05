@@ -34,7 +34,6 @@ public class GameWindow extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(900, 1100);
         setLocationRelativeTo(null);
-        // setResizable(true);
 
         ImageIcon iconPac = new ImageIcon(getClass().getResource("/iconPac.png"));
         setIconImage(iconPac.getImage());
@@ -76,7 +75,8 @@ public class GameWindow extends JFrame {
         gameTable.setRowSelectionAllowed(false);
         gameTable.setColumnSelectionAllowed(false);
         gameTable.setTableHeader(null);
-        gameTable.setGridColor(new Color(0xF4978E));
+        gameTable.setShowGrid(false);
+        gameTable.setIntercellSpacing(new Dimension(0, 0));
         gameTable.setDefaultRenderer(Object.class, new GameCellRenderer());
     }
 
