@@ -9,6 +9,8 @@ public class GameState {
     private int score;
     private final List<Ghost> ghosts = new ArrayList<>();
     private boolean gameOver = false;
+    private final Position exitPosition = new Position(11, 11);
+    private int nextToRelease = 0;
 
     public GameState(BoardMap boardMap) {
         this.boardMap = boardMap;
@@ -64,7 +66,21 @@ public class GameState {
 
     public void moveGhosts() {
         for (Ghost ghost : ghosts) {
-            ghost.move(ghost.getRandomDirection(), boardMap);
+            if (ghost.getOrder() > nextToRelease) {
+                continue;
+            }
+
+            ghost.move(ghost.nextDirection(exitPosition), boardMap);
+
+            if (ghost.isLeavingHouse() &&
+                    ghost.getPosition().getRow() == exitPosition.getRow() &&
+                    ghost.getPosition().getCol() == exitPosition.getCol()) {
+                ghost.setLeavingHouse(false);
+                nextToRelease++;
+                if (nextToRelease == ghosts.size()) {
+                    boardMap.setTileAt(12, 11, TileType.WALL);
+                }
+            }
         }
         checkCollisions();
     }

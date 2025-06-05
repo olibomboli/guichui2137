@@ -54,8 +54,15 @@ public class GameController {
     }
 
     private void createGhosts() {
-        gameState.addGhost(new Ghost(new Position(14, 13)));
-        gameState.addGhost(new Ghost(new Position(14, 14)));
+        Ghost pinkGhost = new Ghost(new Position(13, 11), "ghostPink.png", 0);
+        Ghost blueGhost = new Ghost(new Position(13, 15), "ghostBlue.png", 1);
+        Ghost purpleGhost = new Ghost(new Position(15, 11), "ghostPurple.png", 2);
+        Ghost mintGhost = new Ghost(new Position(15, 15), "ghostMint.png", 3);
+
+        gameState.addGhost(pinkGhost);
+        gameState.addGhost(blueGhost);
+        gameState.addGhost(purpleGhost);
+        gameState.addGhost(mintGhost);
     }
 
     private void startGhostThread() {
